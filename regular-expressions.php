@@ -34,8 +34,8 @@ var_dump($res11);
 $res12 = preg_match_all('/a(s|\s)/', $str, $matches); // () - является подмаской, т.е. ищет 'as' или 'a '
 $res13 = preg_match_all('/a./', $str, $matches); // ищет 'a' с любым далее символом
 $res14 = preg_match_all('/\s{2,4}\w/', $str, $matches); // ищет от 2 до 4 пробелов
-$res15 = preg_match_all('/[ˆ,]\s{3,}\w/', $str, $matches); // ищет от 3 пробела, но без , в начале
-$res16 = preg_match_all('/ˆ[A-Z]/', $str, $matches); // ищет заглавную букву в начале строки
+$res15 = preg_match_all('/[^,]\s{3,}\w/', $str, $matches); // ищет от 3 пробела, но без , в начале
+$res16 = preg_match_all('/^[A-Z]/', $str, $matches); // ищет заглавную букву в начале строки
 $res17 = preg_match_all('/[A-Z]$/', $str, $matches); // ищет заглавную букву в конце строки
 $res18 = preg_match_all('/.+\s+/', $str, $matches); // жадность квантификаторов
 $res19 = preg_match_all('/.+?\s+/', $str, $matches); // урезание квантификаторов
