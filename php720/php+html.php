@@ -9,7 +9,7 @@
     <title>Document</title>
 </head>
 <body>
-<form action="app/check.php" method=post>
+<form action="../app/check.php" method=post>
     <p>Имя: <input name='name' type="text"></p>
     <p>Фамилия: <input name='surname' type="text"></p>
     <p>E-mail: <input name='email' type="text"></p>
