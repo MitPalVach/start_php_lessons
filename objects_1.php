@@ -1,14 +1,244 @@
 <?php
 
-
-
-class ShopProduct implements Chargeable
+trait PriceUtilities
 {
+
+    public function calculateTax(float $price): float
+    {
+        return (($this->getTaxRate() / 100) * $price);
+    }
+
+    public abstract function getTaxRate(): float;
+}
+
+
+abstract class Service
+{
+
+}
+
+
+class UtilityService extends Service
+{
+    use PriceUtilities {
+        PriceUtilities::calculateTax as private;
+    }
+
+    private $price;
+
+    public function __construct(float $price)
+    {
+        $this->price = $price;
+    }
+
+    public function getTaxRate(): float
+    {
+        return 17;
+    }
+
+    public function getFinalPrice(): float
+    {
+        return ($this->price + $this->calculateTax($this->price));
+    }
+}
+
+$u = new UtilityService(100);
+print $u->getFinalPrice(100) . '<br>';
+
+
+trait IdentityTrait
+{
+    public function generateId()
+    {
+        return uniqid();
+    }
+}
+
+
+abstract class DomainObject
+{
+    private $group;
+
+    public function __construct()
+    {
+        $this->group = static::getGroup();
+    }
+
+    public static function create(): DomainObject
+    {
+        return new static();
+    }
+
+    public static function getGroup(): string
+    {
+        return 'default';
+    }
+}
+
+
+class User extends DomainObject
+{
+
+}
+
+
+class Document extends DomainObject
+{
+    public static function getGroup(): string
+    {
+        return "document";
+    }
+}
+
+
+class SpreadSheet extends Document
+{
+
+}
+
+
+print_r(User::create());
+echo '<br>';
+print_r(SpreadSheet::create());
+echo '<br>';
+
+
+//  ==========================================================================================================
+
+
+class Conf
+{
+    private $file;
+    private $xml;
+    private $lastmatch;
+
+    public function __construct(string $file)
+    {
+        $this->file = $file;
+        if (!file_exists($file)) {
+            throw new \Exception("Файл '$file' не найден");
+        }
+        $this->xml = simplexml_load_file($file, null, LIBXML_NOERROR);
+
+        if (!is_object($this->xml)) {
+            throw new XmlException(libxml_get_last_error());
+        }
+        $matches = $this->xml->xpath("/conf");
+        if (!count($matches)) {
+            throw new ConfException("Не найден корневой элемент: conf");
+        }
+    }
+
+
+    public function write()
+    {
+        if (!is_writeable($this->file)) {
+            throw new FileException("Файл '{$this->file}' не доступен по записи");
+        }
+
+        file_put_contents($this->file, $this->xml->asXML());
+    }
+
+    public function get(string $str)
+    {
+        $matches = $this->xml->xpath("/conf/item[@name=\"$str\"]");
+        if (count($matches)) {
+            $this->lastmatch = $matches[0];
+            return (string)$matches[0];
+        }
+        return null;
+    }
+
+    public function set(string $key, string $vakue)
+    {
+        if (!is_null($this->get($key))) {
+            $this->lastmatch[0] = $vakue;
+            return;
+        }
+        $conf = $this->xml->conf;
+        $this->xml->addChild('item', $vakue)->addAttribute('name', $key);
+    }
+
+    public static function init()
+    {
+        try {
+            $fh = fopen(__DIR__ . "/log.txt", "a");
+            fputs($fh, "Начало");
+            $conf = new Conf(dirname(__FILE__) . "/conf.broken.xml");
+            print "user: " . $conf->get('user') . '<br>';
+            print "host: " . $conf->get('host') . '<br>';
+            $conf->set("pass", "newpass");
+            $conf->write();
+
+        } catch (FileException $e) {
+            // Файл не существует или не доступен
+            fputs($fh, "Проблемы с файлом");
+            throw $e;
+
+        } catch (XmlException $e) {
+            // Поврежденный XML-файл
+            fputs($fh, "Проблемы с XML");
+
+        } catch (ConfException $e) {
+            // Неверный формат XML-файла
+            fputs($fh, "Проблемы с конфигурацией");
+
+        } catch (\Exception $e) {
+            // Ловушка: этот код не должен вызываться
+            fputs($fh, "Непредвиденные проблемы");
+        } finally {
+            fputs($fh, "Конец");
+            fclose($fh);
+        }
+    }
+}
+
+
+
+class XmlException extends \Exception
+{
+    private $error;
+
+    public function __construct(\LibXMLError $error)
+    {
+        $shortfile = basename($error->file);
+        $msg = "[{$shortfile}, строка {$error->line}, столбец {$error->column}] {$error->message}";
+        $this->error = $error;
+        parent::__construct($msg, $error->code);
+    }
+
+    public function getLibXmlError()
+    {
+        return $this->error;
+    }
+}
+
+
+class FileException extends \Exception
+{
+
+}
+
+
+class ConfException extends \Exception
+{
+
+}
+
+
+//  ==========================================================================================================
+
+
+class ShopProduct extends UtilityService
+{
+    use PriceUtilities, IdentityTrait;
+
     private $title;
     private $producerMainName;
     private $producerFirstName;
     protected $price;
     private $discount = 0;
+
 
     public function __construct(
         string $title,
@@ -65,8 +295,8 @@ class ShopProduct implements Chargeable
                 $row['price']
             );
         }
-        $product->setID((int) $row['id']);
-        $product->setDiscount((int) $row['discount']);
+        $product->setID((int)$row['id']);
+        $product->setDiscount((int)$row['discount']);
         return $product;
     }
 
@@ -102,7 +332,8 @@ class ShopProduct implements Chargeable
         return $this->price;
     }
 
-    public function CDInfo( CdProduct $prod ) {
+    public function CDInfo(CdProduct $prod)
+    {
 
     }
 
@@ -118,13 +349,22 @@ class ShopProduct implements Chargeable
     }
 }
 
-class Shipping implements Chargeable {
-    public function getPrice(): float {
+
+$p = new ShopProduct("Нежное мыло", " ", " Ванная Боба", "1.33");
+print $p->calculateTax(100) . '<br>';
+print $p->generateId() . '<br>';
+
+
+class Shipping implements Chargeable
+{
+    public function getPrice(): float
+    {
 
     }
 }
 
-interface Chargeable {
+interface Chargeable
+{
 //        public function getPrice(): float;
 
 }
@@ -154,7 +394,8 @@ abstract class ShopProductWriter
 }
 
 
-class XmlProductWriter extends ShopProductWriter {
+class XmlProductWriter extends ShopProductWriter
+{
     public function write()
     {
         // TODO: Implement write() method.
@@ -177,7 +418,8 @@ class XmlProductWriter extends ShopProductWriter {
 }
 
 
-class TextProductWriter extends ShopProductWriter {
+class TextProductWriter extends ShopProductWriter
+{
     public function write()
     {
         // TODO: Implement write() method.
@@ -188,6 +430,9 @@ class TextProductWriter extends ShopProductWriter {
         print $str;
     }
 }
+
+
+//  =========================================================================================
 
 
 class BookProduct extends ShopProduct
