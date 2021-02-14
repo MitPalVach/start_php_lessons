@@ -1,6 +1,8 @@
 <?php
 
-class ShopProduct
+
+
+class ShopProduct implements Chargeable
 {
     private $title;
     private $producerMainName;
@@ -18,6 +20,54 @@ class ShopProduct
         $this->producerFirstName = $firstName;
         $this->producerMainName = $mainName;
         $this->price = $price;
+    }
+
+    private $id = 0;
+
+    public function setID(int $id)
+    {
+        $this->id = $id;
+    }
+
+    public static function getInstace(
+        int $id,
+        \PDO $pdo
+    ): ShopProduct {
+        $stmt = $pdo->prepare(
+            "select * from products where id=?");
+        $result = $stmt->execute([$id]);
+        $row = $stmt->fetch();
+        if (empty($row)) {
+//            return null;
+        }
+        if ($row['type'] == "book") {
+            $product = new BookProduct(
+                $row['title'],
+                $row['firstname'],
+                $row['mainname'],
+                $row['price'],
+                $row['numpages']
+            );
+        } elseif ($row['type'] == "cd") {
+            $product = new CdProduct(
+                $row['title'],
+                $row['firstname'],
+                $row['mainname'],
+                $row['price'],
+                $row['playlength']
+            );
+        } else {
+            $firstname = (is_null($row['firstname'])) ? "" : $row['firstname'];
+            $product = new ShopProduct(
+                $row['title'],
+                $row['firstname'],
+                $row['mainname'],
+                $row['price']
+            );
+        }
+        $product->setID((int) $row['id']);
+        $product->setDiscount((int) $row['discount']);
+        return $product;
     }
 
 
@@ -47,8 +97,13 @@ class ShopProduct
     }
 
     public function getPrice()
+//    public function getPrice(): float;
     {
-        return ($this->price - $this->discount);
+        return $this->price;
+    }
+
+    public function CDInfo( CdProduct $prod ) {
+
     }
 
     public function getProducer()
@@ -63,25 +118,74 @@ class ShopProduct
     }
 }
 
+class Shipping implements Chargeable {
+    public function getPrice(): float {
 
-class ShopProductWriter
+    }
+}
+
+interface Chargeable {
+//        public function getPrice(): float;
+
+}
+
+
+abstract class ShopProductWriter
 {
-    private $products = [];
+    protected $products = [];
 
     public function addProduct(ShopProduct $shopProduct)
     {
         $this->products[] = $shopProduct;
     }
 
+    abstract public function write();
+
+//    {
+//        $str = "";
+//        foreach ($this->products as $shopProduct) {
+//            $str .= "{$shopProduct->title}: ";
+//            $str .= $shopProduct->getProducer();
+//            $str .= "({$shopProduct->getPrice()})" . '<br>';
+//
+//        }
+//    }
+
+}
+
+
+class XmlProductWriter extends ShopProductWriter {
     public function write()
     {
-        $str = "";
+        // TODO: Implement write() method.
+        $writer = new \XMLWriter();
+        $writer->openMemory();
+        $writer->startDocument('1.0', 'UTF-8');
+        $writer->startElement("products");
         foreach ($this->products as $shopProduct) {
-            $str .= "{$shopProduct->title}: ";
-            $str .= $shopProduct->getProducer();
-            $str .= "({$shopProduct->getPrice()})" . '<br>';
-
+            $writer->startElement("product");
+            $writer->writeAttribute("title", $shopProduct->getTitle());
+            $writer->startElement("summary");
+            $writer->text($shopProduct->getSummaryLine());
+            $writer->endElement(); //  "summary"
+            $writer->endElement(); //  "product"
         }
+        $writer->endElement(); //  "products"
+        $writer->endDocument();
+        print $writer->flush();
+    }
+}
+
+
+class TextProductWriter extends ShopProductWriter {
+    public function write()
+    {
+        // TODO: Implement write() method.
+        $str = "ТОВАРЫ: ";
+        foreach ($this->products as $shopProduct) {
+            $str .= $shopProduct->getSummaryLine();
+        }
+        print $str;
     }
 }
 
@@ -160,4 +264,32 @@ $product2 = new CdProduct(
 );
 print "Диск - {$product2->getSummaryLine()}";
 print "Исполнитель {$product2->getProducer()}";
+
+//  =========================================================================================
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
