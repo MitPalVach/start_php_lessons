@@ -194,7 +194,6 @@ class Conf
 }
 
 
-
 class XmlException extends \Exception
 {
     private $error;
