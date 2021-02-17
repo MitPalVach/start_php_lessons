@@ -48,29 +48,41 @@ echo declOfNum(234, ['человек просит', 'человека прося
 
 echo '<br>';
 
-//  ================
+//  ================ Склонение числительных
 
-$m = date('i');
 
-function endings($m)
+function endings($m, $variants)
 {
+    $m1 = $m % 100;
     $m0 = $m % 10;
 
-    if ($m >= 5 && $m <= 20) {
-        $res = ' минут';
+    if ($m1 >= 5 && $m1 <= 20) {
+        $res = $variants[0];
     } elseif ($m0 == 1) {
-        $res = ' минута';
+        $res = $variants[1];
     } elseif ($m0 >= 2 && $m0 <= 4) {
-        $res = ' минуты';
+        $res = $variants[2];
     } else {
-        $res = ' минут';
+        $res = $variants[0];
     }
 
     return $res;
 }
 
-echo $m . ' ' . endings($m);
+$m = ['минут', 'минута', 'минуты'];
+for ($i = 0; $i < 60; $i++) {
+    echo $i . ' ' . endings($i, $m) . '<br>';
+}
 
+$m = ['товаров', 'товар', 'товара'];
+for ($i = 0; $i < 60; $i++) {
+    echo $i . ' ' . endings($i, $m) . '<br>';
+}
+
+$m = ['дней', 'день', 'дня'];
+for ($i = 0; $i <= 365; $i++) {
+    echo $i . ' ' . endings($i, $m) . '<br>';
+}
 
 
 
