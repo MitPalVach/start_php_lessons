@@ -21,15 +21,18 @@ class Account
 class Person
 {
 
-    public function output (PersonWriter $writer) {
+    public function output(PersonWriter $writer)
+    {
         $writer->write($this);
     }
 
-    public function getName():string {
+    public function getName(): string
+    {
         return "Иван";
     }
 
-    public function getAge():int {
+    public function getAge(): int
+    {
         return 44;
     }
 
@@ -87,7 +90,7 @@ $person->output(
         public function write(Person $person)
         {
             // TODO: Implement write() method.
-            print $person->getName(). " " . $person->getAge() . '<br>';
+            print $person->getName() . " " . $person->getAge() . '<br>';
         }
     }
 );

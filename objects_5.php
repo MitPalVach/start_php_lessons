@@ -1,4 +1,7 @@
 <?php
+
+const BR = '<br>';
+
 //
 //$a = 5;
 //function print_some($a)
@@ -31,39 +34,72 @@ while ($i < 10) {
     echo $i;
     $i++;
 }
-
 ?>
 
 
-<!--=======-->
+    <!--=======-->
 
-<select name="" id="">
+    <select name="" id="">
 
-    <?php
-    $j = 1910;
-    while ($j <= 2010) {
-        echo "<option value=\"$j\">$j</option>";
-        $j++;
+        <?php
+        $j = 1910;
+        while ($j <= 2010) {
+            echo "<option value=\"$j\">$j</option>";
+            $j++;
+
+        }
+        ?>
+    </select>
+
+
+    <!--========-->
+
+
+    <select name="" id="">
+
+        <?php
+        for ($k = 1910; $k <= 2010; $k += 2) {
+            echo "<option value=\"$k\">$k</option>";
+
+
+        }
+
+        ?>
+    </select>
+
+<?php
+
+
+//  ====================================================================================================================
+
+
+echo BR;
+
+$capitals = [
+    'Россия' => ['Москва', 'Питер', 'Казань', 'Уфа'],
+    'Фрнация' => ['Париж', 'Лион', 'Ницца'],
+    'Англия' => ['Лондон', 'Санчестер', 'Ливерпуль']
+];
+
+foreach ($capitals as $country => $towns) {
+    echo BR . $country . ' ' . '-' . ' ';
+    foreach ($towns as $town) {
+        echo ' ' . $town;
 
     }
-    ?>
-</select>
+}
+
+//echo $arr['Украина'];
+
+//for ($i = 0; $i < count($arr); $i++) {
+//    echo $arr[$i] . BR;
+//}
+//var_dump($arr);
+
+//  ====================================================================================================================
 
 
-<!--========-->
 
-
-<select name="" id="">
-
-    <?php
-    for ($k = 1910; $k <= 2010; $k += 2) {
-        echo "<option value=\"$k\">$k</option>";
-
-
-    }
-
-    ?>
-</select>
 
 
 

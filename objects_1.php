@@ -349,7 +349,7 @@ class ShopProduct extends UtilityService
 }
 
 
-$p = new ShopProduct("Нежное мыло", " ", " Ванная Боба", "1.33");
+$p = new ShopProduct("Нежное мыло", " ", "Ванная Боба", "1.33");
 print $p->calculateTax(100) . '<br>';
 print $p->generateId() . '<br>';
 

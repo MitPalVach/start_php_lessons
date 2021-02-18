@@ -1,5 +1,7 @@
 <?php
 
+const BR = '</br>';
+
 $a = mt_rand(-10, 10);
 $b = mt_rand(-10, 10);
 
@@ -36,17 +38,7 @@ walk(null, ['milk']);
 
 //  ====================================================================================================================
 
-
-function declOfNum($num, $titles)
-{
-    $cases = [2, 0, 1, 1, 1, 2];
-
-    return $num . " " . $titles[($num % 100 > 4 && $num % 100 < 20) ? 2 : $cases[min($num % 10, 5)]];
-}
-
-echo declOfNum(234, ['человек просит', 'человека просят', 'человек просят']);
-
-echo '<br>';
+echo BR;
 
 //  ================ Склонение числительных
 
@@ -71,22 +63,19 @@ function endings($m, $variants)
 
 $m = ['минут', 'минута', 'минуты'];
 for ($i = 0; $i < 60; $i++) {
-    echo $i . ' ' . endings($i, $m) . '<br>';
+    echo $i . ' ' . endings($i, $m) . BR;
 }
+
 
 $m = ['товаров', 'товар', 'товара'];
 for ($i = 0; $i < 60; $i++) {
-    echo $i . ' ' . endings($i, $m) . '<br>';
+    echo $i . ' ' . endings($i, $m) . BR;
 }
 
 $m = ['дней', 'день', 'дня'];
 for ($i = 0; $i <= 365; $i++) {
-    echo $i . ' ' . endings($i, $m) . '<br>';
+    echo $i . ' ' . endings($i, $m) . BR;
 }
-
-
-
-
 
 
 

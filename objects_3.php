@@ -8,24 +8,30 @@ if ($h < 6) {
 } elseif ($h < 18) {
     $img = 'day';
 } else {
-    $img = 'evening';
+    $img = $dir . 'evening' . $ext;
 }
 
 
 ?>
-<!doctype html>
-<head>
-    <title>Document</title>
-    <style>
-        body {
-            background: url('img/<?php echo $img;?>.jpg '); color: #000000; background-size: cover; }
-    </style>
-</head>
-<body>
-<?php echo $h; ?>
-</body>
-</html>
 
+    <!doctype html>
+
+    <head>
+        <title>Document</title>
+        <style>
+            body {
+                background: url('<?=$img?>');
+                color: #000;
+                background-size: cover;
+            }
+        </style>
+    </head>
+    <body>
+    <?= $h ?>
+    </body>
+
+
+<?php
 
 
 
