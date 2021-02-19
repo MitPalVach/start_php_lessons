@@ -81,20 +81,35 @@ $capitals = [
     'Англия' => ['Лондон', 'Санчестер', 'Ливерпуль']
 ];
 
+echo '<ul>';
 foreach ($capitals as $country => $towns) {
-    echo BR . $country . ' ' . '-' . ' ';
+    echo '<li>';
+    echo $country;
+    echo '<ol>';
     foreach ($towns as $town) {
-        echo ' ' . $town;
-
+        echo "<li>$town</li>";
     }
+    echo '</ol></li>';
 }
+echo '</ul>';
 
-//echo $arr['Украина'];
+// === то же самое
 
-//for ($i = 0; $i < count($arr); $i++) {
-//    echo $arr[$i] . BR;
-//}
-//var_dump($arr);
+?>
+
+    <ul>
+        <?php foreach ($capitals as $country => $towns) { ?>
+            <li><?= $country ?>
+                <ol>
+                    <?php foreach ($towns as $town) { ?>
+                        <li><?= $town ?></li>
+                    <?php } ?>
+                </ol>
+            </li>
+        <?php } ?>
+    </ul>
+
+<?php
 
 //  ====================================================================================================================
 

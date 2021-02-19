@@ -16,13 +16,12 @@ const BR = '<br>';
 //
 
 //  ====================================================================================================================
-
-//if (!isset($_GET['id'])) {
-//    exit('No id - 404');
-//}
+//$text = null;
+//if (isset($_GET['id'])) {
+//    $id = $_GET["id"];
+//    $text = file_get_contents("img/{$id}");
 //
-//$id = $_GET["id"];
-//$text = file_get_contents("img/$id");
+//}
 //
 //$files = scandir('img');
 //
@@ -32,36 +31,51 @@ const BR = '<br>';
 //    }
 //}
 //
-//echo nl2br($text);
+//if ($text) {
+//    echo nl2br($text);
+//}
+
 
 //  ====================================================================================================================
 
 if (count($_POST) > 0) {
-    $name = $_POST['name'];
+    $name = trim($_POST['name']);
     $pass = $_POST['password'];
     $tel = $_POST['phone'];
-//    $date = $_POST['date'];
+    $date = date('Y.m.d H:i:s');
 
-
-
-    file_put_contents('shapka.txt', "$name $pass $tel\n", FILE_APPEND);
+    if (mb_strlen($name) < 2) {
+        $msg = 'Имя не может быть таким коротким :)';
+    } elseif (strlen($tel) < 7) {
+        $msg = 'В поле Телефон должно быть больше цифр!';
+    } elseif (!is_numeric($tel)) {
+        $msg = 'В поле Телефон должны быть только цифры!';
+    } else {
+        file_put_contents('shapka.txt', "$date -|- $name -|- $pass -|- $tel\n", FILE_APPEND);
+        $msg = 'Ваша заявка принята, ожидайте звонка!';
+    }
+} else {
+    $name = '';
+    $tel = '';
+    $pass = '';
+    $msg = 'Привет! Заполните поля и нажмите Отправить';
 }
 
-echo 'Ваша заявка принята, ожидайте звонка!';
 
 ?>
 
-<form action="" method=post>
-    Имя<br>
-    <input type="text" name='name'><br>
-    Пароль<br>
-    <input type="password" name='password'><br>
-    Телефон<br>
-    <input type="tel" name='phone'><br>
+        <form action="" method=post>
+            Имя<br>
+            <input type="text" name='name' value='<?= $name ?>'><br>
+            Пароль<br>
+            <input type="password" name='password' value='<?= $pass ?>'><br>
+            Телефон<br>
+            <input type="tel" name='phone' value='<?= $tel ?>'><br>
+            <input type="submit" value="отправить"><br>
+        </form>
+<?php
 
-    <input type="submit" value="отправить"><br>
-</form>
-
+echo $msg;
 
 
 
